@@ -1,0 +1,21 @@
+
+/* create 4 x 4 grid layout */
+
+.calculator {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    height: 400px;
+    margin: 50px;
+}
+
+.calculator div {
+    display: flex;
+    flex: 1;
+    border: solid black;
+}
+
+button {
+    flex: 1;
+    border: solid black;
+}
