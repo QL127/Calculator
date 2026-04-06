@@ -16,24 +16,28 @@ function divide (a, b) {
 }
 
 // create variables for number, operator and another number
-let firstNum = 0;
-let secondNum = 0;
-let operatorSign = ""; 
+let firstNum = null;
+let secondNum = null;
+let currentOperator = null; 
+let result = null;
+
+// true when operator has been entered, and second number starts
+let isEnteringSecond = false;
+
+// array to store digits for cases of 2 or more digits numbers
+let inputs = [];
 
 // create function to take operator & 2 nums & call one of the above functions
 function operate(firstNum, secondNum, operator) {
     switch (operator) {
         case '+':
-            add (firstNum, secondNum);
-            break;
+            return add (firstNum, secondNum);
         case '-':
-            subtract (firstNum, secondNum);
-            break;
+            return subtract(firstNum, secondNum);
         case 'x':
-            multiply (firstNum, secondNum);
-            break;
+            return multiply(firstNum, secondNum);
         case '/':
-            multiply (firstNum, secondNum);
+            return divide(firstNum, secondNum);
     }
 }
 
@@ -42,36 +46,38 @@ function operate(firstNum, secondNum, operator) {
 
 // when the each num pad is clicked, number has to show
 
-function updateNum() {
-    // reference the number buttons
-    const numbers = document.querySelectorAll(".number");
+function updateNum(e) {
 
-    let input = "";
+    // add each digit to the end of the array
+    inputs.push(e.target.textContent);
 
-    numbers.forEach(number => {
-        number.addEventListener("click", (event) => {
-            input = event.target.textContent;
-            updateDisplay(input);
-        });
-    });
-
-    return Number(input);
+    // combine all digits into one number
+    const value = inputs.join("");
+    updateDisplay(value);
+    
+    // save to secondNum when operator has been entered
+    if (isEnteringSecond) {
+        secondNum = Number(value);
+    } else {
+        firstNum = Number(value);
+    }
+    
 }
 
 // function to update the operators 
-function updateOperator() {
-    const operators = document.querySelectorAll(".operator");
+function updateOperator(e) {
 
-    let sign = "";
+    isEnteringSecond = true;
+    inputs = [];  // reset for second number
 
-    operators.forEach(operator => {
-        operator.addEventListener("click", (event) => {
-            sign = event.target.textContent;
-            updateDisplay(sign);
-        });
-    });
-
-    return sign;
+    if (currentOperator != null) {
+        result = operate(firstNum, secondNum, currentOperator);
+        updateDisplay(result);
+        currentOperator = e.target.textContent;
+        firstNum = result;
+    } else {
+        currentOperator = e.target.textContent;
+    }
 }
 
 function updateDisplay(input) {
@@ -79,19 +85,49 @@ function updateDisplay(input) {
     dis.textContent = input;
 }
 
-// function to clear everything
-
-// update the variables
-firstNum = updateNum;
-updateDisplay(firstNum);
-
-// if first number exists, then second number is updated
-if (firstNum != null) {
-    secondNum = updateNum;
-    updateDisplay(secondNum);
+// function to clear and reset everything
+function clear() {
+    firstNum = null;
+    secondNum = null;
+    currentOperator = null;
+    inputs = [];
+    isEnteringSecond = false;
 }
 
-operatorSign = updateOperator;
+const numpads = document.querySelectorAll(".number");
+const operators = document.querySelectorAll(".operator");
+const equal = document.querySelector("#equal");
+const clr = document.querySelector("#clear");
+
+// first number entered
+// Since updateNum already accepts the event, pass it directly, not using (event) =>
+numpads.forEach(numpad => {
+    numpad.addEventListener("click", updateNum);
+});
+
+// then operator entered
+operators.forEach(operator => {
+    operator.addEventListener("click", updateOperator);
+});
+
+// equal sign clicked
+// the functions called don't use the element clicked so no (event)
+equal.addEventListener("click", () => {
+    result = operate(firstNum, secondNum, currentOperator);
+    console.log(result);
+    updateDisplay(result);
+});
+
+// clear button clicked
+clr.addEventListener("click", clear);
+
+
+
+
+
+
+
+
 
 
 
