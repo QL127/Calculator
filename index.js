@@ -23,6 +23,7 @@ let result = null;
 
 // true when operator has been entered, and second number starts
 let isEnteringSecond = false;
+let justCalculated = false;
 
 // array to store digits for cases of 2 or more digits numbers
 let inputs = [];
@@ -37,7 +38,15 @@ function operate(firstNum, secondNum, operator) {
         case 'x':
             return multiply(firstNum, secondNum);
         case '/':
-            return divide(firstNum, secondNum);
+            {
+                if (secondNum === 0) {
+                    clear();
+                    let message = "Can't divide by zero!";
+                    return message;
+                } else {
+                    return divide(firstNum, secondNum);
+                }
+            }
     }
 }
 
@@ -47,6 +56,13 @@ function operate(firstNum, secondNum, operator) {
 // when the each num pad is clicked, number has to show
 
 function updateNum(e) {
+
+    if (justCalculated) {
+        firstNum = null;
+        secondNum = null;
+        currentOperator = null;
+        isEnteringSecond = false;
+    }
 
     // add each digit to the end of the array
     inputs.push(e.target.textContent);
@@ -67,8 +83,9 @@ function updateNum(e) {
 // function to update the operators 
 function updateOperator(e) {
 
-    isEnteringSecond = true;
-    inputs = [];  // reset for second number
+    isEnteringSecond = true;        // condition to store data to second number
+    justCalculated = false;         // false so data won't clear when numpads are clicked
+    inputs = [];                    // reset for second number
 
     if (currentOperator != null) {
         result = operate(firstNum, secondNum, currentOperator);
@@ -92,10 +109,11 @@ function clear() {
     currentOperator = null;
     inputs = [];
     isEnteringSecond = false;
+    updateDisplay(0);
 }
 
 const numpads = document.querySelectorAll(".number");
-const operators = document.querySelectorAll(".operator");
+const operators = document.querySelectorAll("#divide,#times,#minus,#plus");
 const equal = document.querySelector("#equal");
 const clr = document.querySelector("#clear");
 
@@ -114,29 +132,24 @@ operators.forEach(operator => {
 // the functions called don't use the element clicked so no (event)
 equal.addEventListener("click", () => {
     result = operate(firstNum, secondNum, currentOperator);
-    console.log(result);
     updateDisplay(result);
+    inputs = [];                    // clear the array for next number
+    justCalculated = true;          // condition to clear data for new calculation w new numbers
+
+    //clear();            // reset after hit equal sign only when next button hit is num pad
 });
 
 // clear button clicked
 clr.addEventListener("click", clear);
 
 
+// notable workflow
+
+// = clicked => justCalculated = true => numpad clicked => data cleared for new calculation 
+// => operator clicked => justCalculated = false => numpad clicked => data won't clear
+
+// only clear data when numpad clicked right after = clicked
+// if operator clicked after =, no data cleared and calculation continues
 
 
-
-
-
-
-
-
-
-
-
-
-let num1 = 10;
-let num2 = 13;
-
-let answer = divide(num1, num2);
-
-console.log(answer);
+// missing case of negative number by clicking minus sign and num pad
