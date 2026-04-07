@@ -135,8 +135,6 @@ equal.addEventListener("click", () => {
     updateDisplay(result);
     inputs = [];                    // clear the array for next number
     justCalculated = true;          // condition to clear data for new calculation w new numbers
-
-    //clear();            // reset after hit equal sign only when next button hit is num pad
 });
 
 // clear button clicked
